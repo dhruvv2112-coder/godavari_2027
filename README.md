@@ -5,6 +5,15 @@ The front door for **Godavari Command** (RTIH AP Godavari Pushkaralu 2027): a sc
 same typography, rune/amber palette, glitch headlines, metro-map, split-flap board, bloom,
 grain and the "arrival" build-up — with every word and the whole 3D world replaced.
 
+## Live site and editor
+
+- **Live site:** https://godavari-2027.vercel.app — no editor, shows the published content only.
+- **Editor:** https://godavari-2027.vercel.app/editor — same page with the editor panel. Edits are a draft
+  in your browser until you press **🚀 Publish to live site**, which commits `dist-standalone/config.json`
+  to this repo with your GitHub token; Vercel redeploys in about a minute.
+- **Token:** a GitHub fine-grained personal access token limited to this repo, *Contents: Read and write*.
+  It is stored only in the browser you paste it into. Without it the editor can preview but not publish.
+
 Deployed on Vercel from this repo: `vercel.json` serves `dist-standalone/` as-is (no build step).
 After `npm run standalone`, copy `dist-standalone/godavari-command.html` to `dist-standalone/index.html` before pushing.
 

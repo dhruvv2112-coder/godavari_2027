@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "standalone": "node build-standalone.mjs"
+    "standalone": "node build-standalone.mjs && cp dist-standalone/godavari-command.html dist-standalone/index.html && node scripts/export-config.mjs"
   },
   "keywords": [],
   "author": "",

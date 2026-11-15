@@ -9,28 +9,48 @@ import { World } from './scene.js';
 import { renderUI, renderLoader, wireUI, applyTheme } from './ui.js';
 import { createEditor, loadSaved } from './editor.js';
 
-// saved edits are merged over the defaults, so new default keys still appear
+// Two modes from one build:
+//   live   (/)        — the public site: published content only, no editor
+//   editor (/editor)  — the owner's page: published content + local draft + editor panel + Publish
+const EDITOR = /^\/editor\/?$/.test(location.pathname) || new URLSearchParams(location.search).has('editor');
+
+// edits are merged over the defaults, so new default keys still appear
 function merge(base, over) {
   if (Array.isArray(base) || typeof base !== 'object' || base === null) return over ?? base;
   const out = { ...base };
   for (const key in over) out[key] = key in base ? merge(base[key], over[key]) : over[key];
   return out;
 }
-const cfg = merge(cloneConfig(DEFAULT_CONFIG), loadSaved() || {});
 
-applyTheme(cfg.theme);
-renderLoader(cfg);
+// published content lives in /config.json (written by the editor's Publish button)
+async function loadPublished() {
+  if (location.protocol === 'file:') return null;
+  try { const r = await fetch('/config.json', { cache: 'no-store' }); return r.ok ? await r.json() : null; } catch { return null; }
+}
 
-// let the loader paint before the heavy scene build
-requestAnimationFrame(() => setTimeout(boot, 30));
+let cfg;
+(async () => {
+  const published = await loadPublished();
+  cfg = merge(cloneConfig(DEFAULT_CONFIG), published || {});
+  if (EDITOR) cfg = merge(cfg, loadSaved() || {});
+  else document.getElementById('edit-toggle')?.remove();
+  applyTheme(cfg.theme);
+  renderLoader(cfg);
+  // let the loader paint before the heavy scene build
+  requestAnimationFrame(() => setTimeout(boot, 30));
+})();
 
 function boot() {
   const world = new World(document.getElementById('world'), document.getElementById('labels'), cfg);
   let ui = null;
-  const mountUI = () => { renderUI(cfg); ui = wireUI(cfg, world); editor?.reapplyTextEdit(); };
   let editor = null;
+  const mountUI = () => { renderUI(cfg); ui = wireUI(cfg, world); editor?.reapplyTextEdit(); };
   mountUI();
-  editor = createEditor(cfg, { world, rerenderUI: mountUI, applyTheme });
+  if (EDITOR) {
+    document.body.classList.add('editor-page');
+    editor = createEditor(cfg, { world, rerenderUI: mountUI, applyTheme });
+    setTimeout(() => editor.open(), 3200);   // open the panel once the arrival has played
+  }
 
   // loader counter → then "the awakening"
   const n = document.getElementById('ld-n'), t0 = performance.now();

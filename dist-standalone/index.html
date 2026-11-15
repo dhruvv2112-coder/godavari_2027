@@ -326,6 +326,7 @@ footer { padding-top: 30vh; padding-bottom: 30px; }
 /* ───────────────────────── editor ────────────────────────────────────────── */
 .edit-fab { position: fixed; z-index: 40; left: 18px; bottom: 18px; padding: 10px 14px; font: 500 11px var(--f-mono); letter-spacing: .12em; border: 1px solid var(--rule-2); background: rgba(3,6,12,.8); border-radius: 4px; cursor: pointer; }
 body.editing .edit-fab { border-color: var(--amber); color: var(--amber); }
+body.editor-page::before { content: "EDITOR · DRAFT — CHANGES GO LIVE ONLY WHEN YOU PUBLISH"; position: fixed; z-index: 60; top: 0; left: 50%; transform: translateX(-50%); padding: 5px 14px; font: 500 10px var(--f-mono); letter-spacing: .16em; color: var(--ink); background: var(--amber); border-radius: 0 0 4px 4px; pointer-events: none; }
 body.editing, body.editing button, body.editing summary { cursor: auto; }
 body.editing #cursor { display: none; }
 body.text-edit [data-k] { outline: 1px dashed rgba(255,180,107,.45); outline-offset: 3px; cursor: text; }
@@ -6681,10 +6682,12 @@ function wireUI(config, world) {
 //   • Text: toggle "Edit text on page" and click any outlined text to type.
 //   • Theme / water / ghats / bridges / zones / billboards / camera shots.
 //   • Explore mode + "Capture current view" re-frames any scroll shot.
-//   • Changes persist in localStorage; Export/Import JSON to move them around.
+//   • Changes are a local draft (localStorage) until you press Publish, which
+//     commits /config.json to GitHub; Vercel then redeploys the live site.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const STORE_KEY = 'godavari-command-config-v1';
+const STORE_KEY = 'godavari-command-draft-v1';
+const PUB_KEY = 'godavari-command-publish-v1';
 function loadSaved() {
   try { const s = localStorage.getItem(STORE_KEY); return s ? JSON.parse(s) : null; } catch { return null; }
 }
@@ -6824,19 +6827,50 @@ function createEditor(cfg, { world, rerenderUI, applyTheme }) {
     };
     cSel.onChange(showC); showC(); cf.close();
 
-    const df = gui.addFolder('Save / load');
+    // ── publish to the live site ────────────────────────────────────────────
+    const pub = (() => { try { return JSON.parse(localStorage.getItem(PUB_KEY)) || {}; } catch { return {}; } })();
+    const P = { token: pub.token || '', repo: pub.repo || 'dhruvv2112-coder/godavari_2027', branch: pub.branch || 'main', path: pub.path || 'dist-standalone/config.json', status: 'draft — not published' };
+    const savePub = () => { try { localStorage.setItem(PUB_KEY, JSON.stringify({ token: P.token, repo: P.repo, branch: P.branch, path: P.path })); } catch {} };
+    const pf = gui.addFolder('Publish to live site');
+    const tokCtl = pf.add(P, 'token').name('GitHub token').onFinishChange(savePub);
+    if (tokCtl.$input) tokCtl.$input.type = 'password';
+    pf.add(P, 'repo').name('repository').onFinishChange(savePub);
+    pf.add(P, 'branch').onFinishChange(savePub);
+    pf.add(P, 'path').name('file').onFinishChange(savePub);
+    const statusCtl = pf.add(P, 'status').name('status').disable();
+    const setStatus = t => { P.status = t; statusCtl.updateDisplay(); };
+    pf.add({ async publish() {
+      if (!P.token) { alert('Paste a GitHub fine-grained token with Contents: read & write on ' + P.repo + ' first. It stays in this browser only.'); return; }
+      if (!confirm('Publish these changes to the live site? Vercel redeploys in about a minute.')) return;
+      setStatus('publishing…');
+      const api = `https://api.github.com/repos/${P.repo}/contents/${P.path}`;
+      const H = { Authorization: `Bearer ${P.token}`, Accept: 'application/vnd.github+json' };
+      try {
+        const cur = await fetch(`${api}?ref=${encodeURIComponent(P.branch)}`, { headers: H });
+        const sha = cur.ok ? (await cur.json()).sha : undefined;
+        const bytes = new TextEncoder().encode(JSON.stringify(cfg, null, 2) + '\n');
+        let bin = ''; bytes.forEach(b => (bin += String.fromCharCode(b)));
+        const r = await fetch(api, { method: 'PUT', headers: H, body: JSON.stringify({ message: 'Update site content from the editor', content: btoa(bin), branch: P.branch, sha }) });
+        if (!r.ok) throw new Error(`${r.status} ${(await r.json().catch(() => ({}))).message || ''}`);
+        localStorage.removeItem(STORE_KEY);
+        setStatus('published ✓ live in ~1 min');
+      } catch (err) { setStatus('failed: ' + err.message); }
+    } }, 'publish').name('🚀 Publish to live site');
+    pf.add({ open() { window.open('/', '_blank'); } }, 'open').name('↗ Open the live site');
+
+    const df = gui.addFolder('Draft');
     df.add({ exp() {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' }));
-      a.download = 'godavari-config.json'; a.click();
-    } }, 'exp').name('⬇ Export config JSON');
+      a.download = 'config.json'; a.click();
+    } }, 'exp').name('⬇ Download config.json');
     df.add({ imp() {
       const i = document.createElement('input'); i.type = 'file'; i.accept = '.json';
       i.onchange = async () => { const j = JSON.parse(await i.files[0].text()); localStorage.setItem(STORE_KEY, JSON.stringify(j)); location.reload(); };
       i.click();
-    } }, 'imp').name('⬆ Import config JSON');
+    } }, 'imp').name('⬆ Load a config.json as draft');
     df.add({ re() { rerenderUI(); } }, 're').name('↻ Re-render page text');
-    df.add({ reset() { if (confirm('Discard all edits and go back to the default config?')) { localStorage.removeItem(STORE_KEY); location.reload(); } } }, 'reset').name('⟲ Reset to defaults');
+    df.add({ reset() { if (confirm('Discard your unpublished draft and reload the published content?')) { localStorage.removeItem(STORE_KEY); location.reload(); } } }, 'reset').name('⟲ Discard draft');
   }
 
   function close() {
@@ -6860,28 +6894,48 @@ function createEditor(cfg, { world, rerenderUI, applyTheme }) {
 //  that maps scroll position to camera shots along the riverfront.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// saved edits are merged over the defaults, so new default keys still appear
+// Two modes from one build:
+//   live   (/)        — the public site: published content only, no editor
+//   editor (/editor)  — the owner's page: published content + local draft + editor panel + Publish
+const EDITOR = /^\/editor\/?$/.test(location.pathname) || new URLSearchParams(location.search).has('editor');
+
+// edits are merged over the defaults, so new default keys still appear
 function merge(base, over) {
   if (Array.isArray(base) || typeof base !== 'object' || base === null) return over ?? base;
   const out = { ...base };
   for (const key in over) out[key] = key in base ? merge(base[key], over[key]) : over[key];
   return out;
 }
-const cfg = merge(cloneConfig(DEFAULT_CONFIG), loadSaved() || {});
 
-applyTheme(cfg.theme);
-renderLoader(cfg);
+// published content lives in /config.json (written by the editor's Publish button)
+async function loadPublished() {
+  if (location.protocol === 'file:') return null;
+  try { const r = await fetch('/config.json', { cache: 'no-store' }); return r.ok ? await r.json() : null; } catch { return null; }
+}
 
-// let the loader paint before the heavy scene build
-requestAnimationFrame(() => setTimeout(boot, 30));
+let cfg;
+(async () => {
+  const published = await loadPublished();
+  cfg = merge(cloneConfig(DEFAULT_CONFIG), published || {});
+  if (EDITOR) cfg = merge(cfg, loadSaved() || {});
+  else document.getElementById('edit-toggle')?.remove();
+  applyTheme(cfg.theme);
+  renderLoader(cfg);
+  // let the loader paint before the heavy scene build
+  requestAnimationFrame(() => setTimeout(boot, 30));
+})();
 
 function boot() {
   const world = new World(document.getElementById('world'), document.getElementById('labels'), cfg);
   let ui = null;
-  const mountUI = () => { renderUI(cfg); ui = wireUI(cfg, world); editor?.reapplyTextEdit(); };
   let editor = null;
+  const mountUI = () => { renderUI(cfg); ui = wireUI(cfg, world); editor?.reapplyTextEdit(); };
   mountUI();
-  editor = createEditor(cfg, { world, rerenderUI: mountUI, applyTheme });
+  if (EDITOR) {
+    document.body.classList.add('editor-page');
+    editor = createEditor(cfg, { world, rerenderUI: mountUI, applyTheme });
+    setTimeout(() => editor.open(), 3200);   // open the panel once the arrival has played
+  }
 
   // loader counter → then "the awakening"
   const n = document.getElementById('ld-n'), t0 = performance.now();

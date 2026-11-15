@@ -3,12 +3,14 @@
 //   • Text: toggle "Edit text on page" and click any outlined text to type.
 //   • Theme / water / ghats / bridges / zones / billboards / camera shots.
 //   • Explore mode + "Capture current view" re-frames any scroll shot.
-//   • Changes persist in localStorage; Export/Import JSON to move them around.
+//   • Changes are a local draft (localStorage) until you press Publish, which
+//     commits /config.json to GitHub; Vercel then redeploys the live site.
 // ─────────────────────────────────────────────────────────────────────────────
 import GUI from 'lil-gui';
 import { setPath } from './config.js';
 
-export const STORE_KEY = 'godavari-command-config-v1';
+export const STORE_KEY = 'godavari-command-draft-v1';
+const PUB_KEY = 'godavari-command-publish-v1';
 export function loadSaved() {
   try { const s = localStorage.getItem(STORE_KEY); return s ? JSON.parse(s) : null; } catch { return null; }
 }
@@ -148,19 +150,50 @@ export function createEditor(cfg, { world, rerenderUI, applyTheme }) {
     };
     cSel.onChange(showC); showC(); cf.close();
 
-    const df = gui.addFolder('Save / load');
+    // ── publish to the live site ────────────────────────────────────────────
+    const pub = (() => { try { return JSON.parse(localStorage.getItem(PUB_KEY)) || {}; } catch { return {}; } })();
+    const P = { token: pub.token || '', repo: pub.repo || 'dhruvv2112-coder/godavari_2027', branch: pub.branch || 'main', path: pub.path || 'dist-standalone/config.json', status: 'draft — not published' };
+    const savePub = () => { try { localStorage.setItem(PUB_KEY, JSON.stringify({ token: P.token, repo: P.repo, branch: P.branch, path: P.path })); } catch {} };
+    const pf = gui.addFolder('Publish to live site');
+    const tokCtl = pf.add(P, 'token').name('GitHub token').onFinishChange(savePub);
+    if (tokCtl.$input) tokCtl.$input.type = 'password';
+    pf.add(P, 'repo').name('repository').onFinishChange(savePub);
+    pf.add(P, 'branch').onFinishChange(savePub);
+    pf.add(P, 'path').name('file').onFinishChange(savePub);
+    const statusCtl = pf.add(P, 'status').name('status').disable();
+    const setStatus = t => { P.status = t; statusCtl.updateDisplay(); };
+    pf.add({ async publish() {
+      if (!P.token) { alert('Paste a GitHub fine-grained token with Contents: read & write on ' + P.repo + ' first. It stays in this browser only.'); return; }
+      if (!confirm('Publish these changes to the live site? Vercel redeploys in about a minute.')) return;
+      setStatus('publishing…');
+      const api = `https://api.github.com/repos/${P.repo}/contents/${P.path}`;
+      const H = { Authorization: `Bearer ${P.token}`, Accept: 'application/vnd.github+json' };
+      try {
+        const cur = await fetch(`${api}?ref=${encodeURIComponent(P.branch)}`, { headers: H });
+        const sha = cur.ok ? (await cur.json()).sha : undefined;
+        const bytes = new TextEncoder().encode(JSON.stringify(cfg, null, 2) + '\n');
+        let bin = ''; bytes.forEach(b => (bin += String.fromCharCode(b)));
+        const r = await fetch(api, { method: 'PUT', headers: H, body: JSON.stringify({ message: 'Update site content from the editor', content: btoa(bin), branch: P.branch, sha }) });
+        if (!r.ok) throw new Error(`${r.status} ${(await r.json().catch(() => ({}))).message || ''}`);
+        localStorage.removeItem(STORE_KEY);
+        setStatus('published ✓ live in ~1 min');
+      } catch (err) { setStatus('failed: ' + err.message); }
+    } }, 'publish').name('🚀 Publish to live site');
+    pf.add({ open() { window.open('/', '_blank'); } }, 'open').name('↗ Open the live site');
+
+    const df = gui.addFolder('Draft');
     df.add({ exp() {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' }));
-      a.download = 'godavari-config.json'; a.click();
-    } }, 'exp').name('⬇ Export config JSON');
+      a.download = 'config.json'; a.click();
+    } }, 'exp').name('⬇ Download config.json');
     df.add({ imp() {
       const i = document.createElement('input'); i.type = 'file'; i.accept = '.json';
       i.onchange = async () => { const j = JSON.parse(await i.files[0].text()); localStorage.setItem(STORE_KEY, JSON.stringify(j)); location.reload(); };
       i.click();
-    } }, 'imp').name('⬆ Import config JSON');
+    } }, 'imp').name('⬆ Load a config.json as draft');
     df.add({ re() { rerenderUI(); } }, 're').name('↻ Re-render page text');
-    df.add({ reset() { if (confirm('Discard all edits and go back to the default config?')) { localStorage.removeItem(STORE_KEY); location.reload(); } } }, 'reset').name('⟲ Reset to defaults');
+    df.add({ reset() { if (confirm('Discard your unpublished draft and reload the published content?')) { localStorage.removeItem(STORE_KEY); location.reload(); } } }, 'reset').name('⟲ Discard draft');
   }
 
   function close() {

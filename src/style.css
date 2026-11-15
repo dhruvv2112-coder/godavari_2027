@@ -315,6 +315,7 @@ footer { padding-top: 30vh; padding-bottom: 30px; }
 /* ───────────────────────── editor ────────────────────────────────────────── */
 .edit-fab { position: fixed; z-index: 40; left: 18px; bottom: 18px; padding: 10px 14px; font: 500 11px var(--f-mono); letter-spacing: .12em; border: 1px solid var(--rule-2); background: rgba(3,6,12,.8); border-radius: 4px; cursor: pointer; }
 body.editing .edit-fab { border-color: var(--amber); color: var(--amber); }
+body.editor-page::before { content: "EDITOR · DRAFT — CHANGES GO LIVE ONLY WHEN YOU PUBLISH"; position: fixed; z-index: 60; top: 0; left: 50%; transform: translateX(-50%); padding: 5px 14px; font: 500 10px var(--f-mono); letter-spacing: .16em; color: var(--ink); background: var(--amber); border-radius: 0 0 4px 4px; pointer-events: none; }
 body.editing, body.editing button, body.editing summary { cursor: auto; }
 body.editing #cursor { display: none; }
 body.text-edit [data-k] { outline: 1px dashed rgba(255,180,107,.45); outline-offset: 3px; cursor: text; }
