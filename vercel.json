@@ -5,7 +5,7 @@
   "buildCommand": "",
   "outputDirectory": "dist-standalone",
   "cleanUrls": true,
-  "rewrites": [{ "source": "/editor", "destination": "/index.html" }],
+  "rewrites": [{ "source": "/editor", "destination": "/" }],
   "headers": [
     { "source": "/config.json", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
     { "source": "/editor", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }
