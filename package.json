@@ -1,0 +1,23 @@
+{
+  "name": "godavari-command",
+  "version": "1.0.0",
+  "description": "Scroll-driven 3D walkthrough of the Rajamahendravaram riverfront for Godavari Command (Pushkaralu 2027), in the ESYA design language",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "standalone": "node build-standalone.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lil-gui": "^0.19.2",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "vite": "^8.3.8"
+  },
+  "type": "module"
+}
