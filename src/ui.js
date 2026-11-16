@@ -137,7 +137,7 @@ ${TH.verses.map((v, i) => `<section class="verse" id="verse-${i + 1}"><div class
   </div>
   ${contactHTML(FT.contact)}
   <div class="fcols">
-    <div>${LOCKUP}${k('footer.org', 'p')}</div>
+    <div>${LOCKUP}<dl class="built"><dt class="mono mute">Built By:</dt>${k('footer.builtBy', 'dd')}<dt class="mono mute">Built For:</dt>${k('footer.builtFor', 'dd')}</dl></div>
     <div>${k('footer.whereLabel', 'div', 'mono mute')}${k('footer.where', 'p')}<a class="link-rune" href="${FT.mapsHref}" target="_blank" rel="noopener" data-k="footer.maps">${esc(FT.maps)}</a></div>
     <div class="sig">${k('footer.signalsLabel', 'div', 'mono mute')}${FT.signals.map((s, i) => `<a class="mono" href="${s.href}" ${ext(s.href)}><b data-k="footer.signals.${i}.k">${esc(s.k)}</b><span data-k="footer.signals.${i}.v">${esc(s.v)}</span></a>`).join('')}</div>
     <div>${k('footer.actsLabel', 'div', 'mono mute')}<div class="acts">${c.nav.links.map(l => `<a href="${l.href}">${esc(l.label)}</a>`).join('')}</div></div>

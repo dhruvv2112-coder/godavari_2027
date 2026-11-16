@@ -675,7 +675,6 @@
     "registerHref": "https://rtih-ui-01.vercel.app",
     "partner": "OPEN THE PILGRIM APP ↗",
     "partnerHref": "https://rtih-ui-03.vercel.app",
-    "org": "Godavari Command is built by V & G Technologies Pvt Ltd (Vantesh and Ginni Technologies Private Limited · GiVa Aerotech) for the RTIH AP Godavari Pushkaralu 2027 Innovation Challenge.",
     "whereLabel": "WHERE",
     "where": "Kotilingala Ghat, Rajamahendravaram\nEast Godavari, Andhra Pradesh",
     "maps": "OPEN IN MAPS ↗",
@@ -728,7 +727,9 @@
     "actsLabel": "CHAPTERS",
     "copyright": "© 2026 V & G TECHNOLOGIES PVT LTD",
     "credit": "GHAT POSITIONS © OPENSTREETMAP CONTRIBUTORS · DEMO DATA",
-    "top": "BACK TO THE RIVER ↑"
+    "top": "BACK TO THE RIVER ↑",
+    "builtBy": "Vantesh & Ginni Technologies Pvt Ltd",
+    "builtFor": "RTIH AP Godavari Pushkaralu 2027 Innovation Challenge"
   },
   "scene": {
     "exposure": 1,

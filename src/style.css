@@ -286,6 +286,10 @@ footer { padding-top: 30vh; padding-bottom: 30px; }
 .fcols { display: grid; grid-template-columns: 1.4fr 1.3fr 1fr 1.2fr; gap: 40px; border-top: 1px solid var(--rule); margin-top: 18vh; padding-top: 50px; }
 .fcols .mono.mute { margin-bottom: 18px; }
 .fcols p { color: var(--bone-2); white-space: pre-line; margin: 0 0 18px; }
+.built { margin: 0; }
+.built dt { margin: 0 0 6px; }
+.built dd { margin: 0 0 18px; color: var(--bone); font-size: 16px; line-height: 1.45; }
+.nav__mark b { white-space: nowrap; }
 .fcols .sig a { display: block; margin-bottom: 12px; }
 .fcols .sig b { color: var(--rune); font-weight: 400; margin-right: 10px; }
 .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
@@ -327,7 +331,9 @@ body.text-edit [data-k]:focus { outline: 1px solid var(--amber); background: rgb
 /* ───────────────────────── small screens ─────────────────────────────────── */
 @media (max-width: 760px) {
   .nav { padding: 18px var(--gutter); }
-  .nav .cta { margin-left: 0; font-size: 10px; }
+  .nav .cta { margin-left: 0; font-size: 10px; white-space: nowrap; }
+  .nav__mark b { font-size: 11px; letter-spacing: .2em; }
+  .nav__mark .mark { height: 20px; }
   .sound span { display: none; }
   .hero__meta span:not(:first-child) { display: none; }
   .hero__bar { grid-template-columns: 1fr auto; gap: 18px; }
