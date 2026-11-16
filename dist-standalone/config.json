@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Godavari Command · Pushkaralu 2027"
+    "title": "Godavari Pushkaralu ’27"
   },
   "theme": {
     "ink": "#03060c",
@@ -14,8 +14,8 @@
   },
   "countdownTo": "2027-06-26T00:00:00+05:30",
   "nav": {
-    "brand": "GODAVARI",
-    "year": "’27",
+    "brand": "GiVa VigilNet",
+    "year": "",
     "links": [
       {
         "label": "River",
@@ -100,13 +100,13 @@
   },
   "hero": {
     "meta": [
-      "RAJAMAHENDRAVARAM",
+      "GiVa VigilNet",
       "RTIH × RMC INNOVATION CHALLENGE",
       "MMXXVII"
     ],
     "title": "GODAVARI",
-    "year": "’27",
-    "subtitle": "Command",
+    "year": "",
+    "subtitle": "Pushkaralu ’27",
     "lede": "One river. Six problems. One picture — for the twelve days of Godavari Pushkaralu, where every number shows its age and every decision has a name on it.",
     "countdownLabel": "PUSHKARALU BEGINS IN",
     "figLabel": "FIG. 00",
@@ -701,7 +701,7 @@
     "contact": {
       "label": "CONTACT",
       "company": "Vantesh and Ginni Technologies Pvt Limited",
-      "short": "V & G Technologies Pvt Ltd · GiVa Aerotech",
+      "short": "contact@givaaerotech.com | info@givaaerotech.com",
       "offices": "Hyderabad | Delhi",
       "address": "",
       "email": "",

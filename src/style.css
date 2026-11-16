@@ -297,7 +297,9 @@ footer { padding-top: 30vh; padding-bottom: 30px; }
 .cc { display: grid; grid-template-columns: 1.3fr 1.2fr 1.2fr; gap: 40px; margin-top: 16vh; padding: 34px 36px; border: 1px solid var(--rule-2); background: rgba(3,6,12,.55); backdrop-filter: blur(6px); position: relative; }
 .cc::before { content: ""; position: absolute; left: -1px; top: -1px; width: 64px; height: 2px; background: var(--rune); box-shadow: 0 0 14px var(--rune); }
 .cc__co h3 { font-size: clamp(24px, 2.2vw, 34px); font-weight: 400; margin: 12px 0 10px; line-height: 1.15; color: var(--bone); }
-.cc__co .mono:last-child { color: var(--amber); }
+.cc__co .mono:last-child { color: var(--amber); text-transform: none; letter-spacing: .08em; font-size: 12px; }
+.cc__mail a { color: var(--amber); border-bottom: 1px solid rgba(255,180,107,.35); }
+.cc__mail a:hover { color: var(--bone); border-color: var(--bone); }
 .cc__row { display: grid; grid-template-columns: 90px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
 .cc__row > :last-child { color: var(--bone); font-size: 15px; }
 .cc__people > div { padding: 8px 0 10px; border-bottom: 1px solid var(--rule); }

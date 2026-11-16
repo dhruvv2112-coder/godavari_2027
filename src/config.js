@@ -12,7 +12,7 @@ const LIVE_FIELD = 'https://rtih-ui-02.vercel.app';
 const LIVE_YATRA = 'https://rtih-ui-03.vercel.app';
 
 export const DEFAULT_CONFIG = {
-  meta: { title: 'Godavari Command · Pushkaralu 2027' },
+  meta: { title: 'Godavari Pushkaralu ’27' },
 
   // Colours drive both the CSS custom properties and the 3D materials.
   theme: {
@@ -23,7 +23,7 @@ export const DEFAULT_CONFIG = {
   countdownTo: '2027-06-26T00:00:00+05:30',
 
   nav: {
-    brand: 'GODAVARI', year: '’27',
+    brand: 'GiVa VigilNet', year: '',
     links: [
       { label: 'River', href: '#about' }, { label: 'Principles', href: '#theme' },
       { label: 'Desks', href: '#events' }, { label: 'Programme', href: '#schedule' },
@@ -45,8 +45,8 @@ export const DEFAULT_CONFIG = {
   },
 
   hero: {
-    meta: ['RAJAMAHENDRAVARAM', 'RTIH × RMC INNOVATION CHALLENGE', 'MMXXVII'],
-    title: 'GODAVARI', year: '’27', subtitle: 'Command',
+    meta: ['GiVa VigilNet', 'RTIH × RMC INNOVATION CHALLENGE', 'MMXXVII'],
+    title: 'GODAVARI', year: '', subtitle: 'Pushkaralu ’27',
     lede: 'One river. Six problems. One picture — for the twelve days of Godavari Pushkaralu, where every number shows its age and every decision has a name on it.',
     countdownLabel: 'PUSHKARALU BEGINS IN',
     figLabel: 'FIG. 00',
@@ -223,7 +223,7 @@ export const DEFAULT_CONFIG = {
     contact: {
       label: 'CONTACT',
       company: 'Vantesh and Ginni Technologies Pvt Limited',
-      short: 'V & G Technologies Pvt Ltd · GiVa Aerotech',
+      short: 'contact@givaaerotech.com | info@givaaerotech.com',
       offices: 'Hyderabad | Delhi',
       address: '',
       email: '',

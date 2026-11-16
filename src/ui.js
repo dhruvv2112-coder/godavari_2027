@@ -151,7 +151,7 @@ function contactHTML(C) {
   if (!C) return '';
   const row = (key, label, val, href) => val ? `<div class="cc__row"><span class="mono mute">${esc(label)}</span>${href ? `<a href="${href}" ${ext(href)} data-k="footer.contact.${key}">${esc(val)}</a>` : `<span data-k="footer.contact.${key}">${esc(val)}</span>`}</div>` : '';
   return `<div class="cc">
-    <div class="cc__co">${k('footer.contact.label', 'div', 'mono mute')}${k('footer.contact.company', 'h3', 'serif')}${k('footer.contact.short', 'div', 'mono')}</div>
+    <div class="cc__co">${k('footer.contact.label', 'div', 'mono mute')}${k('footer.contact.company', 'h3', 'serif')}<div class="mono cc__mail" data-k="footer.contact.short">${esc(C.short).replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, m => `<a href="mailto:${m}">${m}</a>`)}</div></div>
     <div class="cc__reach">
       ${row('offices', 'OFFICES', C.offices)}
       ${row('address', 'ADDRESS', C.address)}
