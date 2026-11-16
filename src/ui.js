@@ -14,7 +14,7 @@ const ext = href => (/^https?:/.test(href) ? 'target="_blank" rel="noopener"' : 
 
 // GiVa Aerotech logos (src/media.js): the wing mark for the nav, the full lockup for the footer
 export const MARK = `<img class="mark" src="${MEDIA['giva-mark']}" alt="GiVa" width="40" height="26">`;
-const LOCKUP = `<img class="lockup" src="${MEDIA['giva-lockup']}" alt="GiVa Aerotech — AI · Robotics · Unmanned System">`;
+const LOCKUP = `<img class="lockup" src="${MEDIA['giva-lockup']}" alt="GiVa — AI · Robotics · Unmanned System">`;
 
 const eyebrow = (sec, num = true) => `<div class="eyebrow">
   ${num ? k(`${sec}.num`, 'span', 'num') : `<span class="num">◈</span>`}<span class="line"></span>${k(`${sec}.label`, 'span', 'mono mute')}</div>`;
